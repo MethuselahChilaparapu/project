@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Library Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            color: #333;
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 250px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            color: #ff7e5f;
+            margin-bottom: 30px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #ff7e5f;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            transition: background 0.3s;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .sidebar ul li a:hover {
+            background: #feb47b;
+            color: white;
+        }
+
+        /* Main content styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 800px;
+            display: none; /* Hidden by default */
+            text-align: center;
+        }
+
+        .card.active {
+            display: block; /* Display only when active */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background: #ff7e5f;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .form-group button:hover {
+            background: #feb47b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        table, th, td {
+            border: none;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+        }
+
+        th {
+            background: #ff7e5f;
+            color: white;
+        }
+
+        td {
+            background: #fff;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-borrow {
+            background: #ff7e5f;
+            color: white;
+        }
+
+        .btn-borrow:hover {
+            background: #feb47b;
+        }
+
+        .success-message {
+            color: green;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>User Dashboard</h2>
+            <ul>
+                <li><a onclick="showSection('searchBooks')">Search Books</a></li>
+                <li><a onclick="showSection('borrowBooks')">Borrow Books</a></li>
+                <li><a onclick="showSection('viewBorrowedBooks')">View Borrowed Books</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Search Books Section -->
+            <div class="card" id="searchBooks">
+                <h3>Search Books</h3>
+                <div class="form-group">
+                    <input type="text" id="searchInput" placeholder="Search by title or author..." oninput="filterBooks()">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                        </tr>
+                    </thead>
+                    <tbody id="searchBooksTableBody">
+                        <!-- Books will be dynamically displayed here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Borrow Books Section -->
+            <div class="card" id="borrowBooks">
+                <h3>Borrow Books</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="borrowBooksTableBody">
+                        <!-- Books available to borrow will be dynamically displayed here -->
+                    </tbody>
+                </table>
+                <div id="borrowSuccessMessage" class="success-message" style="display: none;">
+                    Book borrowed successfully!
+                </div>
+            </div>
+
+            <!-- View Borrowed Books Section -->
+            <div class="card" id="viewBorrowedBooks">
+                <h3>My Borrowed Books</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                        </tr>
+                    </thead>
+                    <tbody id="borrowedBooksTableBody">
+                        <!-- Borrowed books will be dynamically displayed here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const books = [
+            { title: 'The Great Gatsby', author: 'F. Scott Fitzgerald' },
+            { title: 'To Kill a Mockingbird', author: 'Harper Lee' },
+            { title: '1984', author: 'George Orwell' },
+        ];
+        const borrowedBooks = [];
+
+        function displaySearchBooks() {
+            const searchTable = document.getElementById('searchBooksTableBody');
+            searchTable.innerHTML = '';
+            books.forEach(book => {
+                const row = `<tr>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                </tr>`;
+                searchTable.innerHTML += row;
+            });
+        }
+
+        function displayBorrowBooks() {
+            const borrowTable = document.getElementById('borrowBooksTableBody');
+            borrowTable.innerHTML = '';
+            books.forEach((book, index) => {
+                const row = `<tr>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td><button class="btn btn-borrow" onclick="borrowBook(${index})">Borrow</button></td>
+                </tr>`;
+                borrowTable.innerHTML += row;
+            });
+        }
+
+        function displayBorrowedBooks() {
+            const borrowedTable = document.getElementById('borrowedBooksTableBody');
+            borrowedTable.innerHTML = '';
+            borrowedBooks.forEach(book => {
+                const row = `<tr>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                </tr>`;
+                borrowedTable.innerHTML += row;
+            });
+        }
+
+        function borrowBook(index) {
+            borrowedBooks.push(books[index]);
+            document.getElementById('borrowSuccessMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('borrowSuccessMessage').style.display = 'none';
+            }, 3000);
+            displayBorrowedBooks();
+        }
+
+        function filterBooks() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const filteredBooks = books.filter(book =>
+                book.title.toLowerCase().includes(searchInput) || book.author.toLowerCase().includes(searchInput)
+            );
+            const searchTable = document.getElementById('searchBooksTableBody');
+            searchTable.innerHTML = '';
+            filteredBooks.forEach(book => {
+                const row = `<tr>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                </tr>`;
+                searchTable.innerHTML += row;
+            });
+        }
+
+        function showSection(sectionId) {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => card.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        displaySearchBooks();
+        displayBorrowBooks();
+        displayBorrowedBooks();
+    </script>
+</body>
+</html>

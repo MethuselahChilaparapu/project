@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        /* Add styles for the success message */
+        .success-message {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            display: flex;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .left {
+            background: #ff7e5f;
+            color: #fff;
+            padding: 40px;
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .left img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .left p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .right {
+            padding: 40px;
+            flex: 1.5;
+        }
+        .right h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background: #ff7e5f;
+            border: none;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background: #feb47b;
+        }
+        .form-footer {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .form-footer a {
+            color: #ff7e5f;
+            text-decoration: none;
+        }
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <img src="https://via.placeholder.com/200" alt="Welcome Back">
+            <p>Log in to access your account and explore more features!</p>
+        </div>
+        <div class="right">
+            <h2>Login Here</h2>
+            <div id="successMessage" class="success-message" style="display: none;"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Login</button>
+                </div>
+                <div class="form-footer">
+                    <p>Don't have an account? <a href="register.html">Register here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const user = users.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                const successMessage = document.getElementById('successMessage');
+                successMessage.style.display = 'block';
+                successMessage.textContent = 'Login successful! ';
+
+                setTimeout(() => {
+                    if (user.role === 'admin') {
+                        window.location.href = 'AdminDashboard.html';
+                    } else {
+                        window.location.href = 'UserDashboard.html';
+                    }
+                }, 2000); // Redirect after 2 seconds
+            } else {
+                alert('Invalid username or password!');
+            }
+        });
+    </script>
+</body>
+</html>

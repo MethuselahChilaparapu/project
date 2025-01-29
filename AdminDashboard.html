@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Library Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            color: #333;
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 250px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.3s;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .sidebar ul li a:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .sidebar ul li a.active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main content styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
+            display: none; /* Hidden by default */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .card.active {
+            display: block; /* Display only when active */
+        }
+
+        h3 {
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        table, th, td {
+            border: none;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+        }
+
+        th {
+            background: #ff7e5f;
+            color: white;
+        }
+
+        td {
+            background: #fff;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            margin-right: 10px;
+        }
+
+        .btn-edit {
+            background: #feb47b;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #ff7e5f;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #ff7e5f;
+        }
+
+        .btn-delete:hover {
+            background: #e94e3d;
+        }
+
+        .form-group input {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
+            width: calc(100% - 22px); /* Adjust input width */
+            margin-bottom: 15px;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 12px;
+            background: #ff7e5f;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .form-group button:hover {
+            background: #e94e3d;
+        }
+
+        .search-form-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-form-group input {
+            width: 75%;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .search-form-group button {
+            width: 20%;
+            padding: 10px;
+            font-size: 1rem;
+            background: #feb47b;
+            color: rgb(206, 145, 145);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .search-form-group button:hover {
+            background: #ff7e5f;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Admin Dashboard</h2>
+            <ul>
+                <li><a onclick="showSection('aboutSystem')" class="active">About System</a></li>
+                <li><a onclick="showSection('addBookSection')">Add a Book</a></li>
+                <li><a onclick="showSection('bookCatalog')">Book Catalog</a></li>
+                <li><a onclick="showSection('manageBooks')">Manage Books</a></li>
+                <li><a onclick="showSection('manageUsers')">Manage Users</a></li>
+                <li><a onclick="showSection('searchUser')">Search Users</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- About Library Management System -->
+            <div class="card active" id="aboutSystem">
+                
+                <p>Welcome to the Library Management System. This platform allows administrators to efficiently manage the library by:</p>
+                
+                <!-- Book Section with Images and Descriptions -->
+                <h3>Popular Books</h3>
+                <div class="book-list">
+                    <div class="book-card">
+                        <img src="https://m.media-amazon.com/images/I/71yu8CAKbgL.jpg" alt="Book 1" class="book-image">
+                        <h4>The Great Gatsby</h4>
+                        <p class="book-description">A novel written by F. Scott Fitzgerald, set in the Roaring Twenties, exploring themes of wealth, love, and the American Dream.</p>
+                    </div>
+                    <div class="book-card">
+                        <img src="https://m.media-amazon.com/images/I/81l3rZK4lnL.jpg">
+                        <h4>1984</h4>
+                        <p class="book-description">A dystopian novel by George Orwell that explores a totalitarian regime where surveillance and control dominate every aspect of life.</p>
+                    </div>
+                    <div class="book-card">
+                        <img src="https://m.media-amazon.com/images/I/61F-bq53kOL.jpg" alt="Book 3" class="book-image">
+                        <h4>To Kill a Mockingbird</h4>
+                        <p class="book-description">A novel by Harper Lee that deals with serious issues such as racial injustice, moral growth, and the loss of innocence in a small Southern town.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Styling for the Books -->
+            <style>
+                .book-list {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 30px;
+                    gap: 20px;
+                }
+            
+                .book-card {
+                    background: #fff;
+                    border-radius: 10px;
+                    width: 30%;
+                    padding: 15px;
+                    text-align: center;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                }
+            
+                .book-card img {
+                    width: 100%;
+                    height: auto;
+                    border-radius: 8px;
+                }
+            
+                .book-card h4 {
+                    margin: 10px 0;
+                    font-size: 1.2rem;
+                    color: #333;
+                }
+            
+                .book-card .book-description {
+                    font-size: 0.9rem;
+                    color: #666;
+                }
+            </style>
+          <!-- Add Book Section -->
+          <div class="card" id="addBookSection">
+            <h3>📚 Add a Book</h3>
+            <form id="addBookForm">
+                <div class="form-group">
+                    <label for="addTitle">Book Title:</label>
+                    <input type="text" id="addTitle" placeholder="Enter book title" required>
+                </div>
+                <div class="form-group">
+                    <label for="addAuthor">Author Name:</label>
+                    <input type="text" id="addAuthor" placeholder="Enter author's name" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Add Book</button>
+                </div>
+                <p id="successMessage" style="color: green; font-weight: bold; margin-top: 15px; display: none;">Book added successfully!</p>
+            </form>
+        </div>
+
+        <!-- Book Catalog Section -->
+<div class="card" id="bookCatalog">
+    <h3>Book Catalog</h3>
+
+    <!-- Search Book Form -->
+    <div class="form-group">
+        <label for="searchBookTitle">Search by Book Title:</label>
+        <input type="text" id="searchBookTitle" placeholder="Search by title" oninput="searchBook()">
+    </div>
+
+    <!-- Books Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+            </tr>
+        </thead>
+        <tbody id="bookTableBody">
+            <!-- Books will be dynamically added here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Sample list of books
+    // const books = [
+    //     { title: 'The Great Gatsby', author: 'F. Scott Fitzgerald' },
+    //     { title: '1984', author: 'George Orwell' },
+    //     { title: 'To Kill a Mockingbird', author: 'Harper Lee' },
+    //     { title: 'Moby Dick', author: 'Herman Melville' },
+    //     { title: 'The Catcher in the Rye', author: 'J.D. Salinger' }
+    // ];
+
+    // Function to display all books
+    function displayBooks(filteredBooks) {
+        const catalogTable = document.getElementById('bookTableBody');
+        catalogTable.innerHTML = '';
+        
+        filteredBooks.forEach(book => {
+            const row = `<tr>
+                <td>${book.title}</td>
+                <td>${book.author}</td>
+            </tr>`;
+            catalogTable.innerHTML += row;
+        });
+    }
+
+    // Function to search for books based on title
+    function searchBook() {
+        const searchValue = document.getElementById('searchBookTitle').value.toLowerCase();
+        const filteredBooks = books.filter(book => book.title.toLowerCase().includes(searchValue));
+        displayBooks(filteredBooks);
+    }
+
+    // Display all books initially
+    displayBooks(books);
+</script>
+
+
+        <!-- Manage Books Section -->
+<div class="card" id="manageBooks">
+    <h3>Manage Books</h3>
+    
+    <!-- Add/Edit Book Form -->
+    <div class="form-group">
+        <label for="bookTitle">Book Title:</label>
+        <input type="text" id="bookTitle" placeholder="Enter book title">
+    </div>
+    <div class="form-group">
+        <label for="bookAuthor">Book Author:</label>
+        <input type="text" id="bookAuthor" placeholder="Enter book author">
+    </div>
+    <div class="form-group">
+        <button onclick="addBook()">Add Book</button>
+        <button onclick="editBook()">Edit Book</button>
+        <button onclick="deleteBook()">Delete Book</button>
+    </div>
+
+    <!-- Books Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="manageBooksTableBody">
+            <!-- Books will be dynamically displayed here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Sample list of books
+    const books = [
+        { title: 'Book 1', author: 'Author 1' },
+        { title: 'Book 2', author: 'Author 2' },
+    ];
+
+    // Function to display books in the table
+    function displayBooks() {
+        const tableBody = document.getElementById('manageBooksTableBody');
+        tableBody.innerHTML = '';
+        books.forEach((book, index) => {
+            const row = `<tr>
+                <td>${book.title}</td>
+                <td>${book.author}</td>
+                <td>
+                    <button class="btn btn-edit" onclick="editBook(${index})">Edit</button>
+                    <button class="btn btn-delete" onclick="deleteBook(${index})">Delete</button>
+                </td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
+
+    // Function to add a new book
+    function addBook() {
+        const title = document.getElementById('bookTitle').value;
+        const author = document.getElementById('bookAuthor').value;
+
+        if (title && author) {
+            books.push({ title, author });
+            displayBooks();
+            alert('Book added successfully!');
+        } else {
+            alert('Please enter both title and author.');
+        }
+    }
+
+    // Function to edit a book
+    function editBook(index) {
+        const newTitle = prompt('Enter new title:', books[index].title);
+        const newAuthor = prompt('Enter new author:', books[index].author);
+
+        if (newTitle && newAuthor) {
+            books[index].title = newTitle;
+            books[index].author = newAuthor;
+            displayBooks();
+            alert('Book updated successfully!');
+        } else {
+            alert('Both title and author must be entered.');
+        }
+    }
+
+    // Function to delete a book
+    function deleteBook(index) {
+        books.splice(index, 1);
+        displayBooks();
+        alert('Book deleted successfully!');
+    }
+
+    // Display books initially in the table
+    displayBooks();
+</script>
+
+            <!-- Manage Users Section -->
+            <div class="card" id="manageUsers">
+                <h3>Manage Users</h3>
+                <div class="form-group">
+                    <label for="newUserName">Username:</label>
+                    <input type="text" id="newUserName" placeholder="Enter username to add/edit/delete">
+                </div>
+                <div class="form-group">
+                    <label for="newUserEmail">Email:</label>
+                    <input type="email" id="newUserEmail" placeholder="Enter user email">
+                </div>
+                <div class="form-group">
+                    <button onclick="addUser()">Add User</button>
+                    <button onclick="editUser()">Edit User</button>
+                    <button onclick="deleteUser()">Delete User</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="manageUsersTableBody">
+                        <!-- Users will be dynamically displayed here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Search User Section -->
+            <div class="card" id="searchUser">
+                <h3>Search Users</h3>
+                <div class="search-form-group">
+                    <input type="text" id="searchUsername" placeholder="Enter username to search">
+                    <button onclick="searchUser()">Search</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody id="searchUserResults">
+                        <!-- Search results will be dynamically displayed here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const users = [
+            { username: 'user1', email: 'user1@example.com' },
+            { username: 'user2', email: 'user2@example.com' },
+        ];
+
+        // Function to display users in the manage section
+        function displayUsers() {
+            const tableBody = document.getElementById('manageUsersTableBody');
+            tableBody.innerHTML = '';
+            users.forEach((user, index) => {
+                const row = `<tr>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>
+                        <button class="btn btn-edit" onclick="editUser(${index})">Edit</button>
+                        <button class="btn btn-delete" onclick="deleteUser(${index})">Delete</button>
+                    </td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        // Function to add a new user
+        function addUser() {
+            const username = document.getElementById('newUserName').value;
+            const email = document.getElementById('newUserEmail').value;
+
+            if (username && email) {
+                users.push({ username, email });
+                displayUsers();
+                alert('User added successfully!');
+            } else {
+                alert('Please enter both username and email.');
+            }
+        }
+
+        // Function to edit a user
+        function editUser(index) {
+            const newUsername = prompt('Enter new username:', users[index].username);
+            const newEmail = prompt('Enter new email:', users[index].email);
+
+            if (newUsername && newEmail) {
+                users[index].username = newUsername;
+                users[index].email = newEmail;
+                displayUsers();
+                alert('User updated successfully!');
+            } else {
+                alert('Both username and email must be entered.');
+            }
+        }
+
+        // Function to delete a user
+        function deleteUser(index) {
+            users.splice(index, 1);
+            displayUsers();
+            alert('User deleted successfully!');
+        }
+
+        // Function to search for a user
+        function searchUser() {
+            const searchUsername = document.getElementById('searchUsername').value.toLowerCase();
+            const results = users.filter(user => user.username.toLowerCase().includes(searchUsername));
+            const resultsTable = document.getElementById('searchUserResults');
+            resultsTable.innerHTML = '';
+
+            if (results.length > 0) {
+                results.forEach(user => {
+                    const row = `<tr>
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                    </tr>`;
+                    resultsTable.innerHTML += row;
+                });
+            } else {
+                resultsTable.innerHTML = '<tr><td colspan="2">No users found.</td></tr>';
+            }
+        }
+
+        // Display users initially in the manage section
+        displayUsers();
+
+        // Function to show the selected section
+        function showSection(sectionId) {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => card.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+    </script>
+</body>
+</html>

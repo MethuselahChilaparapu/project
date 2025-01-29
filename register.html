@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        /* Add styles for the success message */
+        .success-message {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            display: flex;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .left {
+            background: #ff7e5f;
+            color: #fff;
+            padding: 40px;
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .left img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .left p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .right {
+            padding: 40px;
+            flex: 1.5;
+        }
+        .right h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background: #ff7e5f;
+            border: none;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background: #feb47b;
+        }
+        .form-footer {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .form-footer a {
+            color: #ff7e5f;
+            text-decoration: none;
+        }
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <img src="https://via.placeholder.com/200" alt="Welcome">
+            <p>Join us today and start exploring!</p>
+        </div>
+        <div class="right">
+            <h2>Register Here</h2>
+            <div id="successMessage" class="success-message" style="display: none;"></div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group">
+                    <label for="role">Role</label>
+                    <select id="role" required>
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Register</button>
+                </div>
+                <div class="form-footer">
+                    <p>Already have an account? <a href="login.html">Login here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+
+            // Check if username already exists
+            const existingUser = users.find(u => u.username === username);
+            if (existingUser) {
+                alert('Username already taken!');
+                return;
+            }
+
+            // Save new user data
+            users.push({ name, username, email, password, role });
+            localStorage.setItem('users', JSON.stringify(users));
+
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            successMessage.textContent = 'Registration successful! Redirecting to login page...';
+
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 2000); // Redirect after 2 seconds
+        });
+    </script>
+</body>
+</html>
